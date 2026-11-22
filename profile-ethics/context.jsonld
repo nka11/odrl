@@ -1,0 +1,20 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "hegel": "https://w3id.org/hegel-odrl/ns/hegel/",
+    "eth": "https://w3id.org/hegel-odrl/ns/ethics/",
+    "prov": "http://www.w3.org/ns/prov#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "odrl": "http://www.w3.org/ns/odrl/2/",
+
+    "hegel:ethicalCommitment": { "@type": "@id", "@container": "@set" },
+    "hegel:inspectionSource": { "@type": "@id" },
+    "hegel:deliberationTarget": { "@type": "@id" },
+    "hegel:attestation": { "@type": "@id" },
+    "hegel:attestationCredential": { "@type": "@id" },
+    "hegel:forensicEvidence": { "@type": "@id" },
+    "hegel:remedyProtocol": { "@type": "@id" },
+    "hegel:cryptographicLease": { "@type": "xsd:duration" },
+    "hegel:pdpState": { "@type": "@vocab" }
+  }
+}

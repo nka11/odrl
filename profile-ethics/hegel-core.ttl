@@ -1,0 +1,366 @@
+@prefix odrl:  <http://www.w3.org/ns/odrl/2/> .
+@prefix hegel: <https://w3id.org/hegel-odrl/ns/hegel/> .
+@prefix eth:   <https://w3id.org/hegel-odrl/ns/ethics/> .
+@prefix prov:  <http://www.w3.org/ns/prov#> .
+@prefix dpv:   <https://w3id.org/dpv#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:   <http://purl.org/dc/terms/> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix prof:  <http://www.w3.org/ns/dx/prof/> .
+@prefix role:  <http://www.w3.org/ns/dx/prof/role/> .
+
+# =====================================================================
+#  Dialectical Ethical Profile for ODRL -- COMMON CORE (hegel-odrl)
+#  Transport-neutral: identity, attestation format, revocation and
+#  isolation mechanisms are left to binding profiles.
+# =====================================================================
+
+<https://w3id.org/hegel-odrl/profile/core/v1/>
+    a owl:Ontology, prof:Profile, skos:Collection ;
+    rdfs:label "Dialectical Ethical Profile for ODRL 1.0 - Core (hegel-odrl)"@en ;
+    dct:description "Domain-neutral model for asynchronously verified ethical commitments in ODRL: commitment rule, six-state PDP machine, oracle/deliberation roles, remedies, and the eth: substantive ethics vocabulary."@en ;
+    owl:versionInfo "1.0-draft" ;
+    dct:conformsTo <http://www.w3.org/ns/odrl/2/core> ;
+    prof:isProfileOf <http://www.w3.org/ns/odrl/2/core> ;
+    prof:hasResource [
+        a prof:ResourceDescriptor ;
+        prof:hasRole role:vocabulary ;
+        prof:hasArtifact <https://w3id.org/hegel-odrl/ns/hegel/> ;
+        dct:format <https://www.iana.org/assignments/media-types/text/turtle>
+    ] , [
+        a prof:ResourceDescriptor ;
+        prof:hasRole role:vocabulary ;
+        prof:hasArtifact <https://w3id.org/hegel-odrl/ns/ethics/> ;
+        dct:format <https://www.iana.org/assignments/media-types/text/turtle>
+    ] , [
+        a prof:ResourceDescriptor ;
+        prof:hasRole role:schema ;
+        prof:hasArtifact <https://w3id.org/hegel-odrl/ns/hegel/context.jsonld> ;
+        dct:format <https://www.iana.org/assignments/media-types/application/ld+json>
+    ] .
+
+# ---------------------------------------------------------------------
+#  hegel: classes
+# ---------------------------------------------------------------------
+
+hegel:EthicalCommitment
+    a rdfs:Class, owl:Class, skos:Concept ;
+    rdfs:subClassOf odrl:Rule ;
+    rdfs:label "Ethical Commitment"@en ;
+    skos:definition "A normative rule binding an odrl:assignee to substantive ethical obligations or abstentions over a target asset (or artifacts derived from it) that cannot be deterministically evaluated during synchronous transit."@en ;
+    skos:note "A Policy containing one or more hegel:EthicalCommitment rules MUST NOT yield hegel:PERMIT_UNCONDITIONAL. The PDP MUST require ex-ante attestation (hegel:attestation) and move execution into hegel:AUDIT_PENDING."@en .
+
+hegel:PDPState
+    a rdfs:Class, owl:Class ;
+    rdfs:label "Asynchronous PDP State"@en ;
+    skos:definition "A state of the six-state asynchronous Policy Decision Point automaton."@en .
+
+hegel:DeliberativeBody
+    a rdfs:Class, owl:Class ;
+    rdfs:label "Deliberative Body"@en ;
+    rdfs:subClassOf odrl:Party ;
+    skos:definition "An ethics committee or Human-in-the-Loop arbitration authority invoked on entering hegel:SUSPENDED_DELIBERATION."@en .
+
+hegel:DeliberationDossier
+    a rdfs:Class, owl:Class ;
+    rdfs:label "Deliberation Dossier"@en ;
+    skos:definition "The evidence package escalated to a hegel:DeliberativeBody upon normative collision or elevated predictive risk."@en .
+
+hegel:Attestation
+    a rdfs:Class, owl:Class ;
+    rdfs:label "Attestation"@en ;
+    skos:definition "Abstract, verifiable statement by a party. Concrete bindings specialise it."@en .
+
+hegel:EthicalAdherenceAttestation
+    a rdfs:Class, owl:Class ;
+    rdfs:subClassOf hegel:Attestation ;
+    rdfs:label "Ethical Adherence Attestation"@en ;
+    skos:definition "Ex-ante attestation by the assignee that it accepts the referenced ethical commitments, bound to the policy."@en .
+
+hegel:InspectionReport
+    a rdfs:Class, owl:Class ;
+    rdfs:subClassOf hegel:Attestation ;
+    rdfs:label "Inspection Report"@en ;
+    skos:definition "Ex-post verdict issued by an inspection oracle at the end of, or during, an audit cycle."@en .
+
+# ---------------------------------------------------------------------
+#  hegel: properties
+# ---------------------------------------------------------------------
+
+hegel:ethicalCommitment
+    a owl:ObjectProperty ;
+    rdfs:subPropertyOf odrl:rule ;
+    rdfs:domain odrl:Policy ;
+    rdfs:range hegel:EthicalCommitment ;
+    rdfs:label "ethical commitment"@en ;
+    skos:definition "Attaches one or more ethical commitment rules to an ODRL Offer, Agreement or Set."@en .
+
+hegel:inspectionSource
+    a owl:ObjectProperty ;
+    rdfs:domain hegel:EthicalCommitment ;
+    rdfs:range odrl:Party ;
+    rdfs:label "inspection source"@en ;
+    skos:definition "The asynchronous inspection oracle or forensic auditor responsible for deferred verification. Identification scheme is defined by a binding profile."@en .
+
+hegel:deliberationTarget
+    a owl:ObjectProperty ;
+    rdfs:domain hegel:EthicalCommitment ;
+    rdfs:range hegel:DeliberativeBody ;
+    rdfs:label "deliberation target"@en ;
+    skos:definition "The ethics committee or HITL authority invoked upon entering hegel:SUSPENDED_DELIBERATION."@en .
+
+hegel:attestation
+    a owl:ObjectProperty ;
+    rdfs:domain hegel:EthicalCommitment ;
+    rdfs:range hegel:Attestation ;
+    rdfs:label "attestation"@en ;
+    skos:definition "Links the commitment to the required ex-ante adhesion attestation."@en ;
+    skos:note "Generalises hegel:attestationCredential (below)."@en .
+
+hegel:attestationCredential
+    a owl:ObjectProperty ;
+    rdfs:subPropertyOf hegel:attestation ;
+    rdfs:domain hegel:EthicalCommitment ;
+    rdfs:label "attestation credential"@en ;
+    skos:definition "Credential-bearing form of hegel:attestation, retained for URI stability. Binding profiles may narrow its range."@en .
+
+hegel:forensicEvidence
+    a owl:ObjectProperty ;
+    rdfs:domain hegel:EthicalCommitment ;
+    rdfs:range prov:Entity ;
+    rdfs:label "forensic evidence"@en ;
+    skos:definition "Mandates emission of causal execution lineage as W3C PROV-O graphs (prov:Collection / prov:Entity) during hegel:AUDIT_PENDING."@en .
+
+hegel:remedyProtocol
+    a owl:ObjectProperty ;
+    rdfs:subPropertyOf odrl:consequence ;
+    rdfs:domain hegel:EthicalCommitment ;
+    rdfs:range odrl:Duty ;
+    rdfs:label "remedy protocol"@en ;
+    skos:definition "Coercive ex-post remediation duties (e.g. eth:machineUnlearning, eth:revokeDerivedArtifacts) triggered upon hegel:REVOKED_ETHICAL_BREACH."@en .
+
+hegel:cryptographicLease
+    a owl:DatatypeProperty ;
+    rdfs:domain hegel:EthicalCommitment ;
+    rdfs:range xsd:duration ;
+    rdfs:label "cryptographic lease"@en ;
+    skos:definition "Duration for which derived artifacts are held (escrow lock) before export, until the inspection oracle clears the audit cycle. The enforcement mechanism is binding-specific."@en .
+
+hegel:pdpState
+    a owl:ObjectProperty ;
+    rdfs:domain odrl:Agreement ;
+    rdfs:range hegel:PDPState ;
+    rdfs:label "PDP state"@en ;
+    skos:definition "Active lifecycle state of an instantiated policy within the asynchronous PDP state machine."@en .
+
+# ---------------------------------------------------------------------
+#  hegel: oracle left operands
+# ---------------------------------------------------------------------
+
+hegel:predictiveRiskScore
+    a odrl:LeftOperand, skos:Concept ;
+    rdfs:label "Predictive Risk Score"@en ;
+    skos:definition "Probability or composite risk computed asynchronously by a predictive inspection oracle; right operand xsd:decimal in [0.0, 1.0]. Exceeding the bound triggers hegel:SUSPENDED_DELIBERATION."@en .
+
+hegel:driftForecast
+    a odrl:LeftOperand, skos:Concept ;
+    rdfs:label "Drift Forecast"@en ;
+    skos:definition "Maximum tolerated projected concept or demographic bias drift across training epochs or streaming windows; right operand xsd:decimal."@en .
+
+# ---------------------------------------------------------------------
+#  hegel: PDP states   (Creon = synchronous, Antigone = async, Synthesis)
+#  Guards are binding-neutral: "attestation verified and not revoked".
+# ---------------------------------------------------------------------
+
+hegel:DENY
+    a hegel:PDPState, skos:Concept ;
+    rdfs:label "DENY"@en ;
+    skos:definition "Layer: Creon. Violation of any synchronous deterministic constraint (prohibition, expired quota, invalid credential) or revocation of the assignee's attestation. Terminal for the current request."@en .
+
+hegel:PERMIT_UNCONDITIONAL
+    a hegel:PDPState, skos:Concept ;
+    rdfs:label "PERMIT_UNCONDITIONAL"@en ;
+    skos:definition "Layer: Creon. All synchronous constraints satisfied AND no hegel:EthicalCommitment present in the Agreement."@en .
+
+hegel:PROVISIONAL_PERMIT_ATTESTED
+    a hegel:PDPState, skos:Concept ;
+    rdfs:label "PROVISIONAL_PERMIT_ATTESTED"@en ;
+    skos:definition "Layer: Synthesis. Synchronous constraints satisfied, a hegel:EthicalCommitment is present, and a valid hegel:Attestation has been verified and is not revoked. Outbound: hegel:AUDIT_PENDING, hegel:SUSPENDED_DELIBERATION."@en .
+
+hegel:AUDIT_PENDING
+    a hegel:PDPState, skos:Concept ;
+    rdfs:label "AUDIT_PENDING"@en ;
+    skos:definition "Layer: Antigone. Active processing phase; continuous PROV-O telemetry streams to hegel:inspectionSource and derived artifacts are held under hegel:cryptographicLease. Outbound: audit completed (lease released), hegel:SUSPENDED_DELIBERATION, hegel:REVOKED_ETHICAL_BREACH."@en .
+
+hegel:SUSPENDED_DELIBERATION
+    a hegel:PDPState, skos:Concept ;
+    rdfs:label "SUSPENDED_DELIBERATION"@en ;
+    skos:definition "Layer: Antigone. Normative conflict, ambiguity or hegel:predictiveRiskScore breach. Access frozen; a hegel:DeliberationDossier is escalated to hegel:deliberationTarget. Outbound: hegel:PROVISIONAL_PERMIT_ATTESTED, hegel:DENY, hegel:REVOKED_ETHICAL_BREACH."@en .
+
+hegel:REVOKED_ETHICAL_BREACH
+    a hegel:PDPState, skos:Concept ;
+    rdfs:label "REVOKED_ETHICAL_BREACH"@en ;
+    skos:definition "Layer: Synthesis. Forensic proof (or arbitral ruling) confirms violation of ethical thresholds. Triggers revocation of the attestation and hegel:remedyProtocol. Terminal sanction."@en .
+
+# =====================================================================
+#  eth: substantive ethics vocabulary -- domain-neutral part
+# =====================================================================
+
+eth:ActionScheme a skos:ConceptScheme ; rdfs:label "Ethics Actions"@en .
+eth:DataEthicsScheme a skos:ConceptScheme ; rdfs:label "Data Ethics Operands"@en .
+eth:AlgorithmicEthicsScheme a skos:ConceptScheme ; rdfs:label "Algorithmic Ethics & Remediation Operands"@en .
+eth:PrivacyScheme a skos:ConceptScheme ; rdfs:label "Privacy / Anonymization Levels"@en .
+eth:ConsentOriginScheme a skos:ConceptScheme ; rdfs:label "Consent Origins"@en .
+eth:ExplainabilityScheme a skos:ConceptScheme ; rdfs:label "Explainability Levels"@en .
+eth:HumanOversightScheme a skos:ConceptScheme ; rdfs:label "Human Oversight Levels"@en .
+eth:FairnessCriterionScheme a skos:ConceptScheme ; rdfs:label "Fairness Criteria"@en .
+
+# --- Actions -----------------------------------------------------------
+
+eth:trainModel a odrl:Action, skos:Concept ; skos:inScheme eth:ActionScheme ;
+    odrl:includedIn odrl:use ;
+    rdfs:label "Train AI Model"@en ;
+    skos:definition "Execute machine learning training that adjusts model parameters using the target asset."@en .
+
+eth:anonymize a odrl:Action, skos:Concept ; skos:inScheme eth:ActionScheme ;
+    odrl:includedIn odrl:anonymize ;
+    rdfs:label "Anonymize"@en ;
+    skos:definition "Duty (pre-processing): apply privacy-preserving transformations (differential privacy, k-anonymity) before downstream processing."@en .
+
+eth:auditAlgorithm a odrl:Action, skos:Concept ; skos:inScheme eth:ActionScheme ;
+    odrl:includedIn odrl:reviewPolicy ;
+    rdfs:label "Audit Algorithm"@en ;
+    skos:definition "Duty (in-itinere / ex-post): submit a derived model, pipeline or inference logs to independent inspection via hegel:inspectionSource."@en .
+
+eth:machineUnlearning a odrl:Action, skos:Concept ; skos:inScheme eth:ActionScheme ;
+    odrl:includedIn odrl:delete ;
+    rdfs:label "Machine Unlearning"@en ;
+    skos:definition "Remedy duty: algorithmically purge the influence of targeted data from a trained model, validated by an (epsilon, delta) Proof of Unlearning."@en .
+
+eth:fineTuneModel a odrl:Action, skos:Concept ; skos:inScheme eth:ActionScheme ;
+    odrl:includedIn eth:trainModel ;
+    rdfs:label "Fine-Tune Model"@en ;
+    skos:definition "Adapt weights of a pre-trained model (LoRA, RLHF, supervised fine-tuning) using governed assets."@en .
+
+eth:runInference a odrl:Action, skos:Concept ; skos:inScheme eth:ActionScheme ;
+    odrl:includedIn odrl:use ;
+    rdfs:label "Run Model Inference"@en ;
+    skos:definition "Execute production predictions or generative outputs using a derived model, subject to ongoing fairness, explainability and oversight commitments."@en .
+
+eth:attestAdherence a odrl:Action, skos:Concept ; skos:inScheme eth:ActionScheme ;
+    odrl:includedIn odrl:acceptTracking ;
+    rdfs:label "Attest Adherence"@en ;
+    skos:definition "Ex-ante duty: sign and present a hegel:EthicalAdherenceAttestation bound to the assignee's identity before entering hegel:PROVISIONAL_PERMIT_ATTESTED."@en .
+
+eth:emitProvenance a odrl:Action, skos:Concept ; skos:inScheme eth:ActionScheme ;
+    odrl:includedIn odrl:inform ;
+    rdfs:label "Emit PROV-O Provenance"@en ;
+    skos:definition "Continuous duty during hegel:AUDIT_PENDING: stream signed PROV-O lineage (prov:Entity, prov:Activity, prov:Agent) to the inspection oracle."@en .
+
+eth:quarantineArtifact a odrl:Action, skos:Concept ; skos:inScheme eth:ActionScheme ;
+    odrl:includedIn odrl:ensureExclusivity ;
+    rdfs:label "Quarantine Derived Artifact"@en ;
+    skos:definition "Protective duty: retain derived artifacts (checkpoints, weights, embeddings) under a hegel:cryptographicLease blocking export until the oracle clears the audit cycle."@en .
+
+eth:escalateDeliberation a odrl:Action, skos:Concept ; skos:inScheme eth:ActionScheme ;
+    odrl:includedIn odrl:inform ;
+    rdfs:label "Escalate to Deliberation"@en ;
+    skos:definition "Suspend execution and transmit a hegel:DeliberationDossier to hegel:deliberationTarget upon normative collision or elevated predictive risk."@en .
+
+eth:evaluateFairness a odrl:Action, skos:Concept ; skos:inScheme eth:ActionScheme ;
+    odrl:includedIn eth:auditAlgorithm ;
+    rdfs:label "Evaluate Fairness"@en ;
+    skos:definition "Compute and report standardized fairness metrics (disparate impact ratio, demographic parity difference) across protected subgroups."@en .
+
+eth:publishModelCard a odrl:Action, skos:Concept ; skos:inScheme eth:ActionScheme ;
+    odrl:includedIn odrl:attribute ;
+    rdfs:label "Publish Model Card"@en ;
+    skos:definition "Publish structured metadata (Model Card / Datasheet) on training provenance, intended purpose, limitations and compliance attestations."@en .
+
+eth:revokeDerivedArtifacts a odrl:Action, skos:Concept ; skos:inScheme eth:ActionScheme ;
+    odrl:includedIn odrl:delete ;
+    rdfs:label "Revoke Derived Artifacts"@en ;
+    skos:definition "Remedy duty: propagate causal invalidation across downstream models, vector stores and derivative assets linked via prov:wasDerivedFrom upon hegel:REVOKED_ETHICAL_BREACH."@en .
+
+# --- Data ethics left operands -----------------------------------------
+
+eth:anonymizationLevel a odrl:LeftOperand, skos:Concept ; skos:inScheme eth:DataEthicsScheme ;
+    rdfs:label "Anonymization Level"@en ;
+    skos:definition "Minimum mathematical privacy guarantee required for ingestion or release. Right operand: eth:PrivacyScheme concept."@en .
+
+eth:biasMitigated a odrl:LeftOperand, skos:Concept ; skos:inScheme eth:DataEthicsScheme ;
+    rdfs:label "Bias Mitigated"@en ;
+    skos:definition "Whether the asset underwent certified pre-processing bias mitigation. Right operand: xsd:boolean."@en .
+
+eth:consentOrigin a odrl:LeftOperand, skos:Concept ; skos:inScheme eth:DataEthicsScheme ;
+    rdfs:label "Consent Origin"@en ;
+    skos:definition "Lawful provenance and ethical basis of data subject consent. Right operand: eth:ConsentOriginScheme concept or dpv:Consent."@en .
+
+eth:dataLineageVerified a odrl:LeftOperand, skos:Concept ; skos:inScheme eth:DataEthicsScheme ;
+    rdfs:label "Data Lineage Verified"@en ;
+    skos:definition "Requires verification of the upstream PROV-O chain of custody before model training. Right operand: xsd:boolean."@en .
+
+# --- Algorithmic ethics & remediation left operands --------------------
+
+eth:explainabilityLevel a odrl:LeftOperand, skos:Concept ; skos:inScheme eth:AlgorithmicEthicsScheme ;
+    rdfs:label "Explainability Level"@en ;
+    skos:definition "Required degree of interpretability and explanation fidelity. Right operand: eth:ExplainabilityScheme concept."@en .
+
+eth:humanOversight a odrl:LeftOperand, skos:Concept ; skos:inScheme eth:AlgorithmicEthicsScheme ;
+    rdfs:label "Human Oversight Level"@en ;
+    skos:definition "Mandated human governance checkpoints (cf. EU AI Act Art. 14), verified via prov:Agent records. Right operand: eth:HumanOversightScheme concept."@en .
+
+eth:fairnessMetric a odrl:LeftOperand, skos:Concept ; skos:inScheme eth:AlgorithmicEthicsScheme ;
+    rdfs:label "Fairness Metric"@en ;
+    skos:definition "Formal fairness criterion enforced during model evaluation. Right operand: eth:FairnessCriterionScheme concept."@en .
+
+eth:disparateImpactRatio a odrl:LeftOperand, skos:Concept ; skos:inScheme eth:AlgorithmicEthicsScheme ;
+    rdfs:label "Disparate Impact Ratio"@en ;
+    skos:definition "Minimum ratio of favorable outcomes between unprivileged and privileged groups (four-fifths rule baseline, e.g. gteq 0.80). Right operand: xsd:decimal."@en .
+
+eth:demographicParityDiff a odrl:LeftOperand, skos:Concept ; skos:inScheme eth:AlgorithmicEthicsScheme ;
+    rdfs:label "Demographic Parity Difference"@en ;
+    skos:definition "Maximum absolute difference in positive prediction rates across protected classes (e.g. lteq 0.05). Right operand: xsd:decimal."@en .
+
+eth:unlearningEpsilon a odrl:LeftOperand, skos:Concept ; skos:inScheme eth:AlgorithmicEthicsScheme ;
+    rdfs:label "Unlearning Indistinguishability Bound (Epsilon)"@en ;
+    skos:definition "Indistinguishability bound required to validate a Proof of Machine Unlearning after hegel:REVOKED_ETHICAL_BREACH. Right operand: xsd:decimal > 0."@en .
+
+eth:unlearningDelta a odrl:LeftOperand, skos:Concept ; skos:inScheme eth:AlgorithmicEthicsScheme ;
+    rdfs:label "Unlearning Failure Probability Bound (Delta)"@en ;
+    skos:definition "Relaxation probability in approximate (epsilon, delta)-certified unlearning. Right operand: xsd:decimal >= 0."@en .
+
+eth:dualUseProhibition a odrl:LeftOperand, skos:Concept ; skos:inScheme eth:AlgorithmicEthicsScheme ;
+    rdfs:label "Dual-Use Prohibition"@en ;
+    skos:definition "Prohibition of repurposing data or derived weights for autonomous weaponry, mass biometric surveillance or social scoring. Right operand: xsd:boolean or prohibited-domain URI."@en .
+
+eth:socialImpactThreshold a odrl:LeftOperand, skos:Concept ; skos:inScheme eth:AlgorithmicEthicsScheme ;
+    rdfs:label "Social Impact Threshold"@en ;
+    skos:definition "Maximum negative externality index assessed by an accredited ethical impact assessment oracle. Right operand: xsd:decimal."@en .
+
+# --- Controlled right operands (named individuals) ---------------------
+
+eth:k-anonymity a skos:Concept ; skos:inScheme eth:PrivacyScheme ; rdfs:label "k-anonymity"@en .
+eth:l-diversity a skos:Concept ; skos:inScheme eth:PrivacyScheme ; rdfs:label "l-diversity"@en .
+eth:differentialPrivacy a skos:Concept ; skos:inScheme eth:PrivacyScheme ; rdfs:label "Differential privacy"@en .
+eth:syntheticData a skos:Concept ; skos:inScheme eth:PrivacyScheme ; rdfs:label "Synthetic data"@en .
+
+eth:explicitOptIn a skos:Concept ; skos:inScheme eth:ConsentOriginScheme ; rdfs:label "Explicit opt-in"@en .
+eth:altruisticDonation a skos:Concept ; skos:inScheme eth:ConsentOriginScheme ; rdfs:label "Altruistic donation"@en .
+eth:publicInterestMandate a skos:Concept ; skos:inScheme eth:ConsentOriginScheme ; rdfs:label "Public interest mandate"@en .
+
+eth:transparent a skos:Concept ; skos:inScheme eth:ExplainabilityScheme ; rdfs:label "Transparent (intrinsically interpretable)"@en .
+eth:postHocShapley a skos:Concept ; skos:inScheme eth:ExplainabilityScheme ; rdfs:label "Post-hoc Shapley"@en .
+eth:counterfactual a skos:Concept ; skos:inScheme eth:ExplainabilityScheme ; rdfs:label "Counterfactual"@en .
+
+eth:humanInTheLoop a skos:Concept ; skos:inScheme eth:HumanOversightScheme ; rdfs:label "Human-in-the-loop (HITL)"@en .
+eth:humanOnTheLoop a skos:Concept ; skos:inScheme eth:HumanOversightScheme ; rdfs:label "Human-on-the-loop (HOTL)"@en .
+eth:humanInCommand a skos:Concept ; skos:inScheme eth:HumanOversightScheme ; rdfs:label "Human-in-command (HIC)"@en .
+
+eth:statisticalParity a skos:Concept ; skos:inScheme eth:FairnessCriterionScheme ; rdfs:label "Statistical parity"@en .
+eth:equalizedOdds a skos:Concept ; skos:inScheme eth:FairnessCriterionScheme ; rdfs:label "Equalized odds"@en .
+eth:equalOpportunity a skos:Concept ; skos:inScheme eth:FairnessCriterionScheme ; rdfs:label "Equal opportunity"@en .
+eth:calibration a skos:Concept ; skos:inScheme eth:FairnessCriterionScheme ; rdfs:label "Calibration"@en .

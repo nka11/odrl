@@ -1,0 +1,19 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "hegel": "https://w3id.org/hegel-odrl/ns/hegel/",
+    "hegel-ds": "https://w3id.org/hegel-odrl/ns/hegel-ds/",
+    "eth": "https://w3id.org/hegel-odrl/ns/ethics/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+
+    "hegel:boundPolicyUid": { "@type": "@id" },
+    "hegel:policyDigestSha256": { "@type": "xsd:string" },
+    "hegel:acceptedCommitments": { "@container": "@set" },
+    "hegel:unlearningLiabilityAccepted": { "@type": "xsd:boolean" },
+    "hegel:auditedPolicyUid": { "@type": "@id" },
+    "hegel:provGraphDigest": { "@type": "xsd:string" },
+    "hegel:measuredMetrics": { "@type": "@json" },
+    "hegel:verdictState": { "@type": "@vocab" },
+    "hegel:triggeredRemedy": { "@type": "@vocab" }
+  }
+}
