@@ -168,6 +168,6 @@ eth:verifyEnclave a odrl:Action, skos:Concept ; skos:inScheme eth:ActionScheme ;
     rdfs:label "Verify Enclave"@en ;
     skos:definition "Ex-ante duty: provide remote hardware attestation proving computation runs exclusively inside a certified TEE."@en .
 
-eth:TEE a skos:Concept ; skos:inScheme eth:ExecutionEnclaveScheme ; rdfs:label "Trusted Execution Environment"@en .
-eth:confidentialComputing a skos:Concept ; skos:inScheme eth:ExecutionEnclaveScheme ; rdfs:label "Confidential computing"@en .
-eth:federatedSecureAggregation a skos:Concept ; skos:inScheme eth:ExecutionEnclaveScheme ; rdfs:label "Federated secure aggregation"@en .
+eth:TEE a odrl:RightOperand, skos:Concept ; skos:inScheme eth:ExecutionEnclaveScheme ; rdfs:label "Trusted Execution Environment"@en .
+eth:confidentialComputing a odrl:RightOperand, skos:Concept ; skos:inScheme eth:ExecutionEnclaveScheme ; rdfs:label "Confidential computing"@en .
+eth:federatedSecureAggregation a odrl:RightOperand, skos:Concept ; skos:inScheme eth:ExecutionEnclaveScheme ; rdfs:label "Federated secure aggregation"@en .
